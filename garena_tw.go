@@ -11,31 +11,32 @@ import (
 var twHeroListURL = "https://pro.moba.garena.tw/heroList"
 var twHeroURL = "https://moba.garena.tw/game/hero/"
 
-type TwHeroList struct {
-	Name  string
-	Role  string
-	Url   string
-	Image string
+type TwHero struct {
+	Name  string `json:"name"`
+	Role  string `json:"role"`
+	URL   string `json:"url"`
+	Image string `json:"image"`
 }
 
 type TwSkill struct {
-	Order int
-	Image string
-	Text  string
+	Order int    `json:"order"`
+	Image string `json:"image"`
+	Text  string `json:"text"`
 }
 
 type TwRating struct {
-	Name  string
-	Value float64
+	Name  string  `json:"name"`
+	Value float64 `json:"value"`
 }
 
 type TwHeroDetail struct {
-	Skills  []TwSkill
-	Ratings []TwRating
+	Hero    TwHero     `json:"hero"`
+	Skills  []TwSkill  `json:"skills"`
+	Ratings []TwRating `json:"ratings"`
 }
 
-func GetTwHeroList() []TwHeroList {
-	var heroes []TwHeroList
+func GetTwHeroList() []TwHero {
+	var heroes []TwHero
 	resp, err := soup.Get(twHeroListURL)
 	if err != nil {
 		os.Exit(1)
@@ -49,15 +50,15 @@ func GetTwHeroList() []TwHeroList {
 		img := one.Find("img").Attrs()["src"]
 		name := one.Find("div", "class", "herolist-list__item-name").Text()
 		name = strings.TrimSpace(name)
-		hero := TwHeroList{Name: name, Url: link, Image: img, Role: role}
+		hero := TwHero{Name: name, URL: link, Image: img, Role: role}
 		heroes = append(heroes, hero)
 	}
 	return heroes
 }
 
-func GetTwHeroDetail(url string) TwHeroDetail {
+func GetTwHeroDetail(hero TwHero) TwHeroDetail {
 	// url := fmt.Sprintf("%s%s", twHeroURL, id)
-	resp, err := soup.Get(url)
+	resp, err := soup.Get(hero.URL)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -86,5 +87,5 @@ func GetTwHeroDetail(url string) TwHeroDetail {
 		}
 
 	}
-	return TwHeroDetail{Skills: skills, Ratings: points}
+	return TwHeroDetail{Hero: hero, Skills: skills, Ratings: points}
 }

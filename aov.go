@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -85,13 +86,16 @@ func GetAovHeroList() []AovHeroLink {
 	var resp AovHeroesResponse
 	var byteValue []byte
 
-	if _, err := os.Stat("aov_hero_list.json"); err == nil {
-		jsonFile, err := os.Open("aov_hero_list.json")
+	fileName := "aov_hero_list.json"
+	dataDir := "./.tmp"
+	path := filepath.Join(dataDir, fileName)
+
+	if _, err := os.Stat(path); err == nil {
+		jsonFile, err := os.Open(path)
 		if err != nil {
 			fmt.Println(err)
 		}
 		byteValue, _ = ioutil.ReadAll(jsonFile)
-		fmt.Println("From File")
 		defer jsonFile.Close()
 	} else {
 		httpResp, err := http.Get(aovHeroURL)
@@ -100,10 +104,9 @@ func GetAovHeroList() []AovHeroLink {
 		}
 		byteValue, _ = ioutil.ReadAll(httpResp.Body)
 		// write to file too
-		f, _ := os.Create("aov_hero_list.json")
+		f, _ := os.Create(path)
 		f.Write(byteValue)
 		defer f.Close()
-		fmt.Println("From REAL Server")
 	}
 	json.Unmarshal(byteValue, &resp)
 	heroes = resp.Heroes
@@ -116,15 +119,17 @@ func GetAovHeroDetail(id string) AovHero {
 	var resp AovHeroResponse
 	var byteValue []byte
 
-	fp := fmt.Sprintf("aov_hero_%s.json", id)
+	fileName := fmt.Sprintf("aov_hero_%s.json", id)
+	dataDir := "./.tmp"
+	path := filepath.Join(dataDir, fileName)
 
-	if _, err := os.Stat(fp); err == nil {
-		jsonFile, err := os.Open(fp)
+	if _, err := os.Stat(path); err == nil {
+		jsonFile, err := os.Open(path)
 		if err != nil {
 			fmt.Println(err)
 		}
 		byteValue, _ = ioutil.ReadAll(jsonFile)
-		fmt.Println("From File")
+		// fmt.Println("From File")
 		defer jsonFile.Close()
 	} else {
 		httpResp, err := http.Get(url)
@@ -133,10 +138,10 @@ func GetAovHeroDetail(id string) AovHero {
 		}
 		byteValue, _ = ioutil.ReadAll(httpResp.Body)
 		// write to file too
-		f, _ := os.Create(fp)
+		f, _ := os.Create(path)
 		f.Write(byteValue)
 		defer f.Close()
-		fmt.Println("From REAL Server")
+		// fmt.Println("From REAL Server")
 	}
 	json.Unmarshal(byteValue, &resp)
 	hero = resp.Hero
