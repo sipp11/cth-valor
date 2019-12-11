@@ -116,16 +116,12 @@ func GetRovHeroList() []HeroLink {
 
 	if _, err := os.Stat(path); err == nil {
 		jsonFile, err := os.Open(path)
-		if err != nil {
-			fmt.Println(err)
-		}
+		CheckError(err)
 		byteValue, _ = ioutil.ReadAll(jsonFile)
 		defer jsonFile.Close()
 	} else {
 		httpResp, err := http.Get("https://rov.in.th/api/v2/getHeroList")
-		if err != nil {
-			fmt.Println(err)
-		}
+		CheckError(err)
 		byteValue, _ = ioutil.ReadAll(httpResp.Body)
 		// write to file too
 		f, _ := os.Create(path)
@@ -150,9 +146,7 @@ func GetRovHeroDetail(one HeroLink) Hero {
 	} else {
 		url := fmt.Sprintf("https://rov.in.th/hero/%s", one.Slug)
 		resp, err := soup.Get(url)
-		if err != nil {
-			os.Exit(1)
-		}
+		CheckError(err)
 		doc = soup.HTMLParse(resp)
 		// write to file too
 		f, _ := os.Create(path)

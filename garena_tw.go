@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"strconv"
 	"strings"
 
@@ -38,9 +37,7 @@ type TwHeroDetail struct {
 func GetTwHeroList() []TwHero {
 	var heroes []TwHero
 	resp, err := soup.Get(twHeroListURL)
-	if err != nil {
-		os.Exit(1)
-	}
+	CheckError(err)
 	doc := soup.HTMLParse(resp)
 	heroList := doc.FindAll("div", "class", "herolist-list__item")
 	for i := 0; i < len(heroList); i++ {
@@ -59,9 +56,7 @@ func GetTwHeroList() []TwHero {
 func GetTwHeroDetail(hero TwHero) TwHeroDetail {
 	// url := fmt.Sprintf("%s%s", twHeroURL, id)
 	resp, err := soup.Get(hero.URL)
-	if err != nil {
-		os.Exit(1)
-	}
+	CheckError(err)
 	doc := soup.HTMLParse(resp)
 	data := doc.Find("div", "class", "hero-data")
 	skillList := data.Find("div", "class", "hero-data__skills-main").FindAll("div")

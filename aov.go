@@ -62,7 +62,7 @@ type AovHero struct {
 // https://www.arenaofvalor.com/images/heroes/skin/17700_big.jpg
 // https://www.arenaofvalor.com/images/heroes/skin/17701_icon.jpg
 
-// skill URL
+// spell & skill URL
 // https://www.arenaofvalor.com/images/heroes/skill/17710.png
 
 type AovHeroResponse struct {
@@ -92,16 +92,12 @@ func GetAovHeroList() []AovHeroLink {
 
 	if _, err := os.Stat(path); err == nil {
 		jsonFile, err := os.Open(path)
-		if err != nil {
-			fmt.Println(err)
-		}
+		CheckError(err)
 		byteValue, _ = ioutil.ReadAll(jsonFile)
 		defer jsonFile.Close()
 	} else {
 		httpResp, err := http.Get(aovHeroURL)
-		if err != nil {
-			fmt.Println(err)
-		}
+		CheckError(err)
 		byteValue, _ = ioutil.ReadAll(httpResp.Body)
 		// write to file too
 		f, _ := os.Create(path)
@@ -125,17 +121,13 @@ func GetAovHeroDetail(id string) AovHero {
 
 	if _, err := os.Stat(path); err == nil {
 		jsonFile, err := os.Open(path)
-		if err != nil {
-			fmt.Println(err)
-		}
+		CheckError(err)
 		byteValue, _ = ioutil.ReadAll(jsonFile)
 		// fmt.Println("From File")
 		defer jsonFile.Close()
 	} else {
 		httpResp, err := http.Get(url)
-		if err != nil {
-			fmt.Println(err)
-		}
+		CheckError(err)
 		byteValue, _ = ioutil.ReadAll(httpResp.Body)
 		// write to file too
 		f, _ := os.Create(path)
